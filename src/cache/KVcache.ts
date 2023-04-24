@@ -41,7 +41,7 @@ class KeyValueCache {
         this.cache.clear();
     }
 
-    public checkCache(key: symbol | number | string){
+    public isCached(key: symbol | number | string){
         return this.cache.has(key)
     }
 }

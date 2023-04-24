@@ -55,6 +55,16 @@ class LRUCache {
         }
     }
 
+    public isCached(key: number | string | symbol) {
+        return this.cache.has(key);
+    }
+
+    public invalidateAll() {
+        this.cache = new Map();
+        this.head.next = this.tail;
+        this.tail.prev = this.head;
+    }
+
     private addToHead(node: LRUNode) {
         node.next = this.head.next
         node.next!.prev = node
