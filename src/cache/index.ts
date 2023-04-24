@@ -1,1 +1,3 @@
-export {KeyValueCache} from "./KVcache";
+export { KeyValueCache } from "./KVcache.js";
+export { LRUCache } from "./LRUcache.js";
+
