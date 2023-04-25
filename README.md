@@ -40,3 +40,21 @@ cache.isCached("you") // Check if an item exists in the cache and returns a bool
 cache.invalidateAll() // invalidates all items in the cache
 
 ```
+### Single Threaded Cache Example: 
+
+```javascript
+import { SingleThreadCache } from "velo-cache"
+
+const cache = new SingleThreadCache() 
+
+await cache.set('foo', 'bar') // Add and update items in the cache
+
+await cache.get("foo") // Get items from the cache
+
+await cache.remove("foo") // Remove items from the cache
+
+await cache.isCached("you") // Check if an item exists in the cache and returns a boolean
+
+await cache.invalidateAll() // invalidates all items in the cache
+
+```
