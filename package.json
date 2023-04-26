@@ -1,22 +1,22 @@
 {
-  "name": "velo-cache",
-  "version": "1.0.4",
-  "description": "",
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "/dist"
-  ],
-  "scripts": {
-    "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "Giacomo Pessotto",
-  "license": "ISC",
-  "dependencies": {
-    "@types/node": "^18.16.0",
-    "typescript": "^5.0.4"
-  }
+    "name": "velo-cache",
+    "version": "1.0.5",
+    "description": "",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "/dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "Giacomo Pessotto",
+    "license": "ISC",
+    "dependencies": {
+        "@types/node": "^18.16.0",
+        "typescript": "^5.0.4"
+    }
 }
