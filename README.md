@@ -31,7 +31,7 @@ import { LRUCache } from "velo-cache"
 
 const cache = new LRUCache(10) // Specifying the maximum capacity of your cache
 
-cache.put("foo", "bar") // Add and update items in the cache
+cache.set("foo", "bar") // Add and update items in the cache
 
 cache.get("foo") // Get items from the cache
 
@@ -66,7 +66,7 @@ import { LFUCache } from "velo-cache"
 
 const cache = new LFUCache(5) // Specifying the maximum capacity of your cache
 
-cache.put('foo', 'bar') // Add and update items in the cache
+cache.set('foo', 'bar') // Add and update items in the cache
 
 cache.get('foo') // Get items from the cache
 

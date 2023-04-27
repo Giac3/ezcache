@@ -1,99 +1,99 @@
 class LRUNode {
 
-    public key: number | string | symbol | null;
-    public value: any;
-    public next: LRUNode | null;
-    public prev: LRUNode | null;
+  public key: number | string | symbol | null;
+  public value: any;
+  public next: LRUNode | null;
+  public prev: LRUNode | null;
 
-    constructor(key: number | string | symbol | null, value: any) {
-        this.key = key;
-        this.value = value;
-        this.next = null;
-        this.prev = null;
-    }
+  constructor(key: number | string | symbol | null, value: any) {
+    this.key = key;
+    this.value = value;
+    this.next = null;
+    this.prev = null;
+  }
 
 }
 
 class LRUCache {
 
-    private capacity: number;
-    private cache: Map<number | string | symbol, LRUNode>;
-    private head: LRUNode;
-    private tail: LRUNode;
+  private capacity: number;
+  private cache: Map<number | string | symbol, LRUNode>;
+  private head: LRUNode;
+  private tail: LRUNode;
 
-    constructor(capacity: number) {
-        this.capacity = capacity;
-        this.head = new LRUNode(null, null);
-        this.tail = new LRUNode(null, null);
-        this.head.next = this.tail;
-        this.tail.prev = this.head;
-        this.cache = new Map();
+  constructor(capacity: number) {
+    this.capacity = capacity;
+    this.head = new LRUNode(null, null);
+    this.tail = new LRUNode(null, null);
+    this.head.next = this.tail;
+    this.tail.prev = this.head;
+    this.cache = new Map();
+  }
+
+  public get(key: number | string | symbol): any {
+    const node = this.cache.get(key);
+    if (!node) {
+      return null;
     }
+    this.moveToHead(node);
+    return node.value;
+  }
 
-    public get(key: number | string | symbol): any {
-        const node = this.cache.get(key);
-        if (!node) {
-            return null;
-        }
-        this.moveToHead(node);
-        return node.value;
+  public set(key: number | string | symbol, value: any) {
+    let node = this.cache.get(key);
+    if (!node) {
+      node = new LRUNode(key, value);
+      this.cache.set(key, node);
+      this.addToHead(node);
+      if (this.cache.size > this.capacity) {
+        const tail = this.removeTail();
+        this.cache.delete(tail!.key as string | number | symbol);
+      }
+    } else {
+      node.value = value;
+      this.moveToHead(node);
     }
+  }
 
-    public put(key: number | string | symbol, value: any) {
-        let node = this.cache.get(key);
-        if (!node) {
-            node = new LRUNode(key, value);
-            this.cache.set(key, node);
-            this.addToHead(node);
-            if (this.cache.size > this.capacity) {
-                const tail = this.removeTail();
-                this.cache.delete(tail!.key as string | number | symbol);
-            }
-        } else {
-            node.value = value;
-            this.moveToHead(node);
-        }
+  public isCached(key: number | string | symbol) {
+    return this.cache.has(key);
+  }
+
+  public invalidateAll() {
+    this.cache = new Map();
+    this.head.next = this.tail;
+    this.tail.prev = this.head;
+  }
+
+  private addToHead(node: LRUNode) {
+    node.next = this.head.next
+    node.next!.prev = node
+    node.prev = this.head
+    this.head.next = node
+  }
+
+  private removeNode(node: LRUNode) {
+    if (node.prev) {
+      node.prev.next = node.next
     }
-
-    public isCached(key: number | string | symbol) {
-        return this.cache.has(key);
+    if (node.next) {
+      node.next.prev = node.prev
     }
+    node.prev = null
+    node.next = null
+  }
 
-    public invalidateAll() {
-        this.cache = new Map();
-        this.head.next = this.tail;
-        this.tail.prev = this.head;
-    }
+  private moveToHead(node: LRUNode) {
+    this.removeNode(node);
+    this.addToHead(node);
+  }
+  private removeTail() {
 
-    private addToHead(node: LRUNode) {
-        node.next = this.head.next
-        node.next!.prev = node
-        node.prev = this.head
-        this.head.next = node
-    }
+    const node = this.tail.prev
+    this.removeNode(node!)
+    return node
 
-    private removeNode(node: LRUNode) {
-        if (node.prev) {
-            node.prev.next = node.next
-        }
-        if(node.next){
-            node.next.prev = node.prev
-        }
-        node.prev = null
-        node.next = null
-    }
-
-    private moveToHead(node: LRUNode) {
-        this.removeNode(node);
-        this.addToHead(node);
-    }
-    private removeTail() {
-
-        const node = this.tail.prev
-        this.removeNode(node!)
-        return node
-
-    }
+  }
 
 }
 

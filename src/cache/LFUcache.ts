@@ -1,73 +1,73 @@
-interface CacheEntry {
-  key: string | number | symbol;
-  value: any;
-  frequency: number;
-}
+import { DLL } from "../index.js";
 
 class LFUCache {
-  private cache: Map<string | number | symbol, CacheEntry>;
-  private frequencyMap: { [key: string | number | symbol]: number };
+  private listMap: Map<string | number | symbol, DLL>;
+  private lfuCount: number;
+  private valMap: Map<string | number | symbol, any>;
+  private countMap: Map<string | number | symbol, number>
   private capacity: number;
 
   constructor(capacity: number) {
-    this.cache = new Map<string | number | symbol, CacheEntry>();
-    this.frequencyMap = {};
+    this.countMap = new Map()
+    this.listMap = new Map()
+    this.listMap.set(0, new DLL())
+    this.lfuCount = 0
+    this.valMap = new Map();
     this.capacity = capacity;
   }
 
-  public get(key: string | number | symbol): any {
-    const entry = this.cache.get(key);
-    if (!entry) {
-      return null;
+  private counter(key: string | number | symbol) {
+    let count = this.countMap.get(key) || 0
+    this.countMap.set(key, count + 1)
+    this.listMap.get(count).remove(key)
+    if (!this.listMap.has(count + 1)) {
+      this.listMap.set(count + 1, new DLL())
     }
-    this.incrementFrequency(entry);
-    return entry.value;
+    this.listMap.get(count + 1).addToHead(key)
+
+    if (count === this.lfuCount && this.listMap.get(count).length() === 0) {
+      this.lfuCount++
+    }
+  }
+
+  public get(key: string | number | symbol): any {
+    if (this.valMap.has(key)) {
+      this.counter(key)
+      return this.valMap.get(key)
+    } else {
+      return -1
+    }
+  }
+
+  public set(key: string | number | symbol, value: any): null | void {
+    if (this.capacity == 0) {
+      return null
+    }
+
+    if (!this.valMap.has(key) && this.valMap.size === this.capacity) {
+      let removed = this.listMap.get(this.lfuCount).removeFromTail()
+      this.valMap.delete(removed)
+      this.countMap.delete(removed)
+    }
+    this.valMap.set(key, value)
+    this.counter(key)
+    this.lfuCount = Math.min(this.lfuCount, this.countMap.get(key))
   }
 
   public isCached(key: string | number | symbol): boolean {
-    return this.cache.has(key);
+    return this.valMap.has(key)
   }
 
   public invalidateAll(): void {
-    this.cache.clear();
-    this.frequencyMap = {};
+    this.listMap = new Map()
+    this.listMap.set(0, new DLL())
+    this.lfuCount = 0
+    this.valMap = new Map();
+    this.countMap = new Map()
   }
 
-  public put(key: string | number | symbol, value: any): void {
-    if (this.capacity === 0) {
-      return;
-    }
-    const entry = this.cache.get(key);
-    if (entry) {
-      entry.value = value;
-      this.incrementFrequency(entry);
-    } else {
-      if (this.cache.size >= this.capacity) {
-        this.evictLeastFrequentlyUsed();
-      }
-      this.cache.set(key, { key, value, frequency: 1 });
-      this.frequencyMap[key] = 1;
-    }
-  }
-
-  private incrementFrequency(entry: CacheEntry): void {
-    entry.frequency++;
-    this.frequencyMap[entry.key] = entry.frequency;
-  }
-
-  private evictLeastFrequentlyUsed(): void {
-    let leastFrequentlyUsedKey: string | number | symbol = null;
-    let leastFrequentlyUsedFrequency = Infinity;
-    for (const [key, entry] of this.cache.entries()) {
-      if (entry.frequency < leastFrequentlyUsedFrequency) {
-        leastFrequentlyUsedKey = key;
-        leastFrequentlyUsedFrequency = entry.frequency;
-      }
-    }
-    this.cache.delete(leastFrequentlyUsedKey);
-    delete this.frequencyMap[leastFrequentlyUsedKey];
-  }
 }
+
 
 
 export { LFUCache };
